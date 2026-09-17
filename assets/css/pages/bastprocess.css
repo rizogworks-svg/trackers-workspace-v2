@@ -1,0 +1,2 @@
+/* Route-local stylesheet. Add only this page's future overrides here. */
+body[data-page="bastprocess"] .view:not(.active){display:none!important;}
