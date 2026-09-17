@@ -409,18 +409,14 @@
 </div>
 </section>
 <section class="view" id="notesView">
-<section class="notes-panel">
-<div class="notes-toolbar notes-toolbar-clean">
-<label class="notes-search" for="noteSearchInput"><span>⌕</span><input autocomplete="off" id="noteSearchInput" placeholder="Cari catatan..." type="search"/></label>
-</div>
-<div class="notes-create-row">
-<button class="notes-new-icon" id="noteNewIconBtn" type="button" aria-label="Buat catatan baru" title="Catatan baru">
-<span aria-hidden="true">＋</span><strong>New</strong>
-</button>
-</div>
-<div aria-label="Filter catatan" class="notes-mode-row">
-<button class="notes-mode-btn active" id="notesActiveMode" type="button">Catatan</button>
-<button class="notes-mode-btn" id="notesArchiveMode" type="button">Arsip</button>
+<section class="notes-panel notes-keep-layout">
+<div class="notes-topbar">
+  <label class="notes-search notes-search-compact" for="noteSearchInput"><span aria-hidden="true">⌕</span><input autocomplete="off" id="noteSearchInput" placeholder="Cari catatan..." type="search"/></label>
+  <div class="notes-top-actions" aria-label="Aksi Note Pad">
+    <button class="notes-new-icon notes-top-pill" id="noteNewIconBtn" type="button" aria-label="Buat catatan baru" title="Catatan baru"><span aria-hidden="true">＋</span><strong>Baru</strong></button>
+    <button class="notes-mode-btn active" id="notesActiveMode" type="button">Catatan</button>
+    <button class="notes-mode-btn" id="notesArchiveMode" type="button">Arsip</button>
+  </div>
 </div>
 <div class="notes-section" id="notesPinnedSection">
 <div class="notes-section-title"><span>PINNED</span><small id="notesPinnedCount">0</small></div>
@@ -955,7 +951,8 @@
 <button class="btn dark cloud-google-btn" id="loginSubmitBtn" type="submit">Masuk</button>
 <div aria-live="polite" class="login-inline-status" id="loginInlineStatus" role="status"></div>
 </form>
-<button class="cloud-link-btn" id="forgotPasswordBtn" type="button">Lupa password?</button>
+<button class="btn light cloud-reset-password-btn" id="forgotPasswordBtn" type="button">Buat / Reset Password</button>
+<small class="cloud-reset-password-help">Belum punya password atau lupa password? Masukkan email di atas lalu buat password baru melalui email.</small>
 <small id="cloudAuthHint">Tidak ada pendaftaran publik. Akun dibuat oleh Admin.</small>
 <small class="local-test-hint" id="localTestHint" style="display:none">Mode uji file lokal. Untuk penggunaan normal, buka Trackers Workspace dari GitHub Pages.</small>
 </div>
@@ -963,15 +960,15 @@
  Forgot Password Modal 
 <div class="modalbg" id="forgotPasswordModal"><div class="modal small">
 <div class="modalhead">
-<div><p class="eyebrow">KEAMANAN AKUN</p><h2>Lupa Password</h2></div>
+<div><p class="eyebrow">KEAMANAN AKUN</p><h2>Buat / Reset Password</h2></div>
 <button class="close" data-close="forgotPasswordModal">×</button>
 </div>
-<p class="muted auth-help-copy">Masukkan email akun. Jika akun tersedia, instruksi reset akan dikirim ke email tersebut.</p>
+<p class="muted auth-help-copy">Masukkan email akun Trackers. Kami akan mengirim link untuk membuat password baru. Link akan kembali langsung ke Trackers Workspace.</p>
 <form class="formgrid" id="forgotPasswordForm">
 <label class="field span2"><span>Email</span><input autocomplete="email" id="forgotEmail" required="" type="email"/></label>
 <div class="formactions span2">
 <button class="btn light" data-close="forgotPasswordModal" type="button">Batal</button>
-<button class="btn dark">Kirim Instruksi</button>
+<button class="btn dark">Kirim Link Password</button>
 </div>
 </form>
 </div></div>

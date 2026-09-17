@@ -6381,3 +6381,7 @@ html[data-theme="light"] .sidebar-nav .navbtn.active:focus-visible{
 
 /* v2 entry loader */
 .v2-loading,.v2-load-error{min-height:100vh;display:grid;place-items:center;background:#141513;color:#f3f4ed;font:600 14px/1.5 system-ui,sans-serif}.v2-load-error{align-content:center;gap:12px;text-align:center}.v2-load-error button{border:0;border-radius:12px;background:#b7ff52;color:#171b10;padding:12px 18px;font-weight:800;cursor:pointer}
+
+/* v2.1 login password recovery */
+.cloud-reset-password-btn{width:100%;margin-top:10px;min-height:44px!important}
+.cloud-reset-password-help{display:block;margin-top:8px;color:var(--muted);font-size:10px;line-height:1.5}

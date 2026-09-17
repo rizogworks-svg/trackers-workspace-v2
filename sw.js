@@ -1,4 +1,4 @@
-const CACHE='trackers-workspace-v2-20260918-2';
+const CACHE='trackers-workspace-v2-20260918-5';
 const APP_SHELL=['./','./index.html','./app-shell.html','./manifest.webmanifest','./projects/','./bast/','./pkbon/','./notes/','./reporting/','./settings/','./assets/css/core.css','./assets/js/entry.js','./assets/js/storage-guard.js','./assets/js/config.js','./assets/js/cloud.js','./assets/js/pkbon.js','./assets/js/app.js','./assets/js/boot.js','./assets/img/icon-192.png','./assets/img/icon-512.png','./assets/img/trackers-logo.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(APP_SHELL)).catch(()=>{}))});
 self.addEventListener('activate',e=>e.waitUntil((async()=>{for(const k of await caches.keys())if(k!==CACHE)await caches.delete(k);await self.clients.claim()})()));

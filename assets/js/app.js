@@ -335,17 +335,36 @@ function noteUpdatedLabel(v){
   if(!v)return"";
   try{return new Intl.DateTimeFormat("id-ID",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date(v))}catch{return""}
 }
+function noteDateParts(v){
+  if(!v)return{time:"",date:""};
+  try{
+    const d=new Date(v);
+    return{
+      time:new Intl.DateTimeFormat("id-ID",{hour:"2-digit",minute:"2-digit",hour12:false}).format(d).replace(".","."),
+      date:new Intl.DateTimeFormat("id-ID",{day:"2-digit",month:"short",year:"numeric"}).format(d)
+    }
+  }catch{return{time:"",date:""}}
+}
+function noteActionIcon(kind){
+  const icons={
+    pin:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4.5l5 5-3 1.5-3.5 3.5-.5 4-1 1-3.5-3.5-3.5 3.5-1-1 3.5-3.5-3.5-3.5 1-1 4-.5L12 9.5z"/><path d="M7 17l-3 3"/></svg>`,
+    trash:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 14h10l1-14"/><path d="M10 11v6M14 11v6"/></svg>`,
+    archive:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-1 4H5z"/><path d="M6 9v10h12V9"/><path d="M12 11v5"/><path d="M9.5 14l2.5 2.5 2.5-2.5"/></svg>`
+  };
+  return icons[kind]||"";
+}
 function noteCardHtml(n){
+  const archived=!!n.archived;
   const title=String(n.title||"").trim();
   const body=String(n.body||"").trim();
-  const archived=!!n.archived;
+  const dt=noteDateParts(n.updatedAt||n.createdAt);
   return `<article class="note-card note-color-${noteColorKey(n.color)}${n.pinned&&!archived?' is-pinned':''}" data-note-open="${esc(n.id)}">
-    <div class="note-card-head"><strong>${title?esc(title):'<span class="note-untitled">Tanpa judul</span>'}</strong>${n.pinned&&!archived?'<span class="note-pin-badge">PIN</span>':''}</div>
+    <div class="note-card-head"><strong>${title?esc(title):'<span class="note-untitled">Tanpa judul</span>'}</strong></div>
     ${body?`<div class="note-card-body">${esc(body)}</div>`:'<div class="note-card-body note-card-empty">Catatan kosong</div>'}
-    <div class="note-card-footer"><small>${noteUpdatedLabel(n.updatedAt||n.createdAt)}</small><div class="note-card-actions">
-      ${archived?'':`<button type="button" data-note-pin="${esc(n.id)}" title="${n.pinned?'Lepas pin':'Sematkan'}">${n.pinned?'Unpin':'Pin'}</button>`}
-      <button type="button" data-note-archive="${esc(n.id)}" title="${archived?'Pulihkan':'Arsipkan'}">${archived?'Pulihkan':'Arsip'}</button>
-      <button type="button" data-note-delete="${esc(n.id)}" title="Hapus">Hapus</button>
+    <div class="note-card-footer"><small class="note-card-date"><b>${esc(dt.time)}</b><span>${esc(dt.date)}</span></small><div class="note-card-actions">
+      ${archived?'':`<button type="button" class="note-icon-action${n.pinned?' active':''}" data-note-pin="${esc(n.id)}" title="${n.pinned?'Lepas pin':'Sematkan'}" aria-label="${n.pinned?'Lepas pin':'Sematkan'}">${noteActionIcon('pin')}</button>`}
+      <button type="button" class="note-icon-action note-delete-action" data-note-delete="${esc(n.id)}" title="Hapus" aria-label="Hapus">${noteActionIcon('trash')}</button>
+      <button type="button" class="note-icon-action" data-note-archive="${esc(n.id)}" title="${archived?'Pulihkan':'Arsipkan'}" aria-label="${archived?'Pulihkan':'Arsipkan'}">${noteActionIcon('archive')}</button>
     </div></div>
   </article>`
 }
@@ -357,13 +376,13 @@ function renderNotes(){
   let rows=state.notes.filter(n=>!!n.archived===archivedMode);
   if(q)rows=rows.filter(n=>norm(`${n.title||""} ${n.body||""}`).includes(q));
   rows=rows.slice().sort((a,b)=>new Date(b.updatedAt||b.createdAt||0)-new Date(a.updatedAt||a.createdAt||0));
-  const pinned=archivedMode?[]:rows.filter(n=>n.pinned);
-  const normal=archivedMode?rows:rows.filter(n=>!n.pinned);
-  $("notesPinnedSection").style.display=pinned.length?"block":"none";
-  $("notesPinnedGrid").innerHTML=pinned.map(noteCardHtml).join("");
-  $("notesMainGrid").innerHTML=normal.map(noteCardHtml).join("");
-  $("notesPinnedCount").textContent=String(pinned.length);
-  $("notesMainCount").textContent=String(normal.length);
+  // One continuous Keep-style grid; pinned notes stay first instead of creating a separate visual section.
+  if(!archivedMode) rows.sort((a,b)=>(Number(!!b.pinned)-Number(!!a.pinned)) || (new Date(b.updatedAt||b.createdAt||0)-new Date(a.updatedAt||a.createdAt||0)));
+  $("notesPinnedSection").style.display="none";
+  $("notesPinnedGrid").innerHTML="";
+  $("notesMainGrid").innerHTML=rows.map(noteCardHtml).join("");
+  $("notesPinnedCount").textContent=String(rows.filter(n=>n.pinned&&!archivedMode).length);
+  $("notesMainCount").textContent=String(rows.length);
   $("notesMainLabel").textContent=archivedMode?"ARSIP":"CATATAN";
   $("notesEmpty").style.display=rows.length?"none":"grid";
   $("notesActiveMode").classList.toggle("active",!archivedMode);
@@ -1626,17 +1645,23 @@ $("emailLoginForm").onsubmit=async e=>{
   }catch(_){}
 };
 $("forgotPasswordBtn").onclick=()=>{
-  $("forgotEmail").value=$("loginEmail").value.trim();
-  openModal("forgotPasswordModal")
+  $("forgotEmail").value=$("loginEmail").value.trim().toLowerCase();
+  openModal("forgotPasswordModal");
+  setTimeout(()=>$("forgotEmail")?.focus(),80)
 };
 $("forgotPasswordForm").onsubmit=async e=>{
   e.preventDefault();
   const email=$("forgotEmail").value.trim();
   try{
-    await requestPasswordReset(email)
-  }catch(_){}
-  closeModal("forgotPasswordModal");
-  toast("Jika email terdaftar, instruksi reset sudah dikirim")
+    await requestPasswordReset(email);
+    closeModal("forgotPasswordModal");
+    setLoginInline("Link Buat / Reset Password sudah dikirim. Cek inbox atau folder spam.","info");
+    toast("Link password sudah dikirim ke email")
+  }catch(err){
+    const msg=err?.message||"Gagal mengirim link password";
+    toast(msg);
+    setLoginInline(msg,"error")
+  }
 };
 $("resetPasswordForm").onsubmit=async e=>{
   e.preventDefault();

@@ -254,6 +254,13 @@ async function cloudHandleSession(session){
   await cloudReconcile()
 }
 async function cloudInit(){
+  const authParams=new URLSearchParams((location.hash||"").replace(/^#/,""));
+  const queryParams=new URLSearchParams(location.search||"");
+  const authError=queryParams.get("error_description")||authParams.get("error_description")||"";
+  const authCode=queryParams.get("error_code")||authParams.get("error_code")||"";
+  if(authCode==="otp_expired"||/expired|invalid/i.test(authError)){
+    setTimeout(()=>setLoginInline("Link email sudah tidak berlaku. Isi email lalu klik Buat / Reset Password untuk meminta link baru.","error"),0);
+  }
   const localMode=["file:","content:"].includes(location.protocol);
   if($("localTestHint"))$("localTestHint").style.display=localMode?"block":"none";
 
@@ -367,12 +374,16 @@ async function emailPasswordLogin(email,password){
   }
 }
 async function requestPasswordReset(email){
-  if(!cloudClient)return;
-  const redirectTo=location.origin&&location.origin!=="null"
-    ? location.origin+location.pathname
-    : location.href.split("#")[0].split("?")[0];
-  const {error}=await cloudClient.auth.resetPasswordForEmail(email,{redirectTo});
-  if(error)throw error
+  if(!cloudClient)throw new Error("Supabase client belum siap");
+  const normalizedEmail=String(email||"").trim().toLowerCase();
+  if(!normalizedEmail||!normalizedEmail.includes("@"))throw new Error("Email tidak valid");
+
+  // Always return to the real Trackers repository root. This avoids localhost
+  // and keeps GitHub Pages subfolder paths intact.
+  const redirectTo=(window.TRACKERS_APP_ROOT || (location.origin+location.pathname)).split("#")[0].split("?")[0];
+  const {error}=await cloudClient.auth.resetPasswordForEmail(normalizedEmail,{redirectTo});
+  if(error)throw error;
+  return {redirectTo}
 }
 async function setNewPassword(password){
   if(!cloudClient)return;

@@ -12,7 +12,7 @@
 
   const mount=document.getElementById('app-root');
   try{
-    const res=await fetch(new URL('app-shell.html?v=2.0.0',root),{cache:'no-store'});
+    const res=await fetch(new URL('app-shell.html?v=2.1.1',root),{cache:'no-store'});
     if(!res.ok) throw new Error('HTTP '+res.status);
     mount.innerHTML=await res.text();
     // shell paths must resolve from repository root, not from /projects etc.
@@ -35,14 +35,14 @@
   }
 
   try{
-    await loadScript(new URL('assets/js/storage-guard.js?v=2.0.0',root));
+    await loadScript(new URL('assets/js/storage-guard.js?v=2.1.1',root));
     await loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js');
     await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
-    await loadScript(new URL('assets/js/config.js?v=2.0.0',root));
-    await loadScript(new URL('assets/js/cloud.js?v=2.0.0',root));
-    await loadScript(new URL('assets/js/pkbon.js?v=2.0.0',root));
-    await loadScript(new URL('assets/js/app.js?v=2.0.0',root));
-    await loadScript(new URL('assets/js/boot.js?v=2.0.0',root));
+    await loadScript(new URL('assets/js/config.js?v=2.1.1',root));
+    await loadScript(new URL('assets/js/cloud.js?v=2.1.1',root));
+    await loadScript(new URL('assets/js/pkbon.js?v=2.1.1',root));
+    await loadScript(new URL('assets/js/app.js?v=2.1.1',root));
+    await loadScript(new URL('assets/js/boot.js?v=2.1.1',root));
     window.TRACKERS_ROUTE_READY=true;
     document.body.dataset.page=route;
 
@@ -55,7 +55,7 @@
     }
 
     // Load route-local JS after the stable core. New feature work belongs here.
-    const pageJs=new URL(`assets/js/pages/${route}.js?v=2.0.0`,root);
+    const pageJs=new URL(`assets/js/pages/${route}.js?v=2.1.1`,root);
     await loadScript(pageJs).catch(()=>{});
   }catch(err){console.error('Trackers v2 boot failed',err);}
 })();
