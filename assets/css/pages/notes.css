@@ -1,2 +1,11 @@
 /* Route-local stylesheet. Add only this page's future overrides here. */
 body[data-page="notes"] .view:not(.active){display:none!important;}
+
+
+/* New note action */
+body[data-page="notes"] .notes-create-row{display:flex;justify-content:flex-start;align-items:center;margin-top:2px;}
+body[data-page="notes"] .notes-new-icon{display:inline-flex;align-items:center;gap:9px;min-height:42px;padding:0 15px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--text);font:inherit;font-weight:800;cursor:pointer;transition:.18s ease;}
+body[data-page="notes"] .notes-new-icon span{display:grid;place-items:center;width:26px;height:26px;border-radius:9px;background:var(--accent);color:#171b10;font-size:21px;line-height:1;}
+body[data-page="notes"] .notes-new-icon:hover{border-color:var(--accent);transform:translateY(-1px);}
+body[data-page="notes"] .notes-new-icon:focus-visible{outline:3px solid rgba(183,255,82,.18);outline-offset:2px;border-color:var(--accent);}
+@media(max-width:720px){body[data-page="notes"] .notes-new-icon{min-height:40px;padding:0 13px;border-radius:13px}}

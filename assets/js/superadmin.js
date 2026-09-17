@@ -1,6 +1,6 @@
 /* Hidden Superadmin console. Security is enforced again inside Supabase RPCs. */
 (async function(){
- const gate=document.getElementById('saGate'), consoleEl=document.getElementById('saConsole'), rowsEl=document.getElementById('saRows'), userEl=document.getElementById('saUser'), search=document.getElementById('saSearch');
+ const gate=document.getElementById('saGate'), consoleEl=document.getElementById('saConsole'), rowsEl=document.getElementById('saRows'), userEl=document.getElementById('saUser'), search=document.getElementById('saSearch'), createForm=document.getElementById('saCreateUserForm'), createMsg=document.getElementById('saCreateMessage');
  const cfg=window.TRACKLY_CONFIG||{};
  if(!window.supabase?.createClient||!cfg.supabaseUrl||!cfg.supabasePublishableKey){gate.innerHTML='<span class="sa-error">Konfigurasi Supabase tidak tersedia.</span>';return}
  const client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
@@ -32,5 +32,22 @@
  async function setRole(id,role){const {error}=await client.rpc('trackers_superadmin_set_role',{target_user:id,new_role:role});if(error)alert(error.message);await load()}
  async function setAccess(id,enabled){const {error}=await client.rpc('trackers_superadmin_set_access',{target_user:id,enabled});if(error)alert(error.message);await load()}
  async function resetUser(id,name){if(!confirm(`Reset seluruh data workspace ${name}? Akun login tidak dihapus.`))return;const {error}=await client.rpc('trackers_superadmin_reset_user_state',{target_user:id});if(error)alert(error.message);else alert('Data workspace user dikosongkan.');await load()}
+
+ async function inviteUser(e){
+   e.preventDefault();
+   const email=document.getElementById('saNewEmail').value.trim();
+   const full_name=document.getElementById('saNewName').value.trim();
+   const role=document.getElementById('saNewRole').value;
+   const access_enabled=document.getElementById('saNewAccess').checked;
+   if(!email)return;
+   createMsg.className='sa-message';createMsg.textContent='Mengirim undangan…';
+   const {data,error}=await client.functions.invoke('trackers-admin-create-user',{body:{email,full_name,role,access_enabled}});
+   if(error||data?.error){createMsg.className='sa-message err';createMsg.textContent=data?.error||error?.message||'Gagal membuat user.';return}
+   createMsg.className='sa-message ok';createMsg.textContent=`Undangan dikirim ke ${email}.`;
+   createForm.reset();document.getElementById('saNewAccess').checked=true;document.getElementById('saNewRole').value='viewer';
+   await load();
+ }
+
+ if(createForm)createForm.onsubmit=inviteUser;
  search.oninput=render; await load();
 })();

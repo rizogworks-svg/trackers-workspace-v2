@@ -23,6 +23,7 @@ Versi modular/multi-route untuk repository GitHub baru. **Supabase project, publ
 - `assets/js/entry.js` = bootstrap route.
 - `supabase/001_user_state.sql` = baseline state lama, tidak diubah.
 - `supabase/002_superadmin.sql` = migration opsional untuk hidden Superadmin.
+- `supabase/functions/trackers-admin-create-user/` = Edge Function untuk invite user baru secara aman (service-role tidak masuk frontend).
 
 ## GitHub Pages baru
 
@@ -49,3 +50,14 @@ Route `/superadmin/` tidak ditampilkan di Dashboard/Settings/sidebar. Mengetahui
 ## Prinsip v2
 
 Untuk perubahan berikutnya, usahakan edit `assets/css/pages/<fitur>.css` dan `assets/js/pages/<fitur>.js`. Dengan begitu perubahan Note Pad tidak perlu menyentuh CSS/JS Projects, PKBON, atau BAST.
+
+
+## Superadmin: tambah user baru
+
+Setelah `002_superadmin.sql` dijalankan, deploy Edge Function berikut melalui Supabase CLI/Dashboard:
+
+```bash
+supabase functions deploy trackers-admin-create-user
+```
+
+Function memakai `SUPABASE_SERVICE_ROLE_KEY` hanya di server-side Supabase. Jangan menyalin service-role key ke `assets/js/config.js`. Setelah function ter-deploy, `/superadmin/` dapat mengirim invite email dan sekaligus menetapkan role awal user. Role yang tersedia saat ini: `viewer`, `regional_pic`, `project_manager`, `admin`, dan `superadmin`; `owner` tetap dilindungi.

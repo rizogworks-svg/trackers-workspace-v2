@@ -1806,6 +1806,7 @@ $("ruleForm").onsubmit=e=>{
 
 $("noteForm").onsubmit=saveNoteFromForm;
 $("noteSearchInput").oninput=renderNotes;
+$("noteNewIconBtn").onclick=()=>openNoteModal();
 $("notesActiveMode").onclick=()=>{noteViewMode="active";renderNotes()};
 $("notesArchiveMode").onclick=()=>{noteViewMode="archive";renderNotes()};
 document.querySelectorAll("[data-note-color]").forEach(b=>b.onclick=()=>selectNoteColor(b.dataset.noteColor));
