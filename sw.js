@@ -1,4 +1,4 @@
-const CACHE='trackers-workspace-v2-20260918-6';
+const CACHE='trackers-workspace-v2-20260918-7';
 const APP_SHELL=[
  './','./index.html','./app-shell.html','./manifest.webmanifest','./404.html',
  './projects/','./bast/','./pkbon/','./notes/','./reporting/','./settings/',
